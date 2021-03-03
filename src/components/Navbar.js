@@ -18,6 +18,9 @@ export default class Navbar extends Component {
                         <li className="nav-item">
                             <Link className="nav-link" to="/contact">Contact</Link>
                         </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/typerace">Type Race</Link>
+                        </li>
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" href="/" id="dropdownId" data-toggle="dropdown" aria-expanded="false">Shop</a>
                             <div className="dropdown-menu" aria-labelledby="dropdownId">
@@ -25,7 +28,7 @@ export default class Navbar extends Component {
                                 <Link className="dropdown-item" to="/shop/cart">
                                     Cart
                                     <span className="float-right">
-                                        <span className="badge badge-pill badge-secondary">{this.props.cart.length}</span>
+                                        <span className="badge badge-pill badge-secondary">{this.props.deepCart.length}</span>
                                     </span>
                                 </Link>
                                 <Link className="dropdown-item" to="/">Checkout</Link>
