@@ -9,6 +9,7 @@ import Shop from './views/Shop';
 import Contact from './views/Contact';
 import ShopCart from './views/ShopCart';
 import { Race } from './views/Race';
+import { EmployeeManager } from './views/EmployeeManager';
 
 export default class App extends Component {
   constructor() {
@@ -119,6 +120,7 @@ export default class App extends Component {
             <Route exact path='/shop' render={() => <Shop addToCart={this.addToCart} products={this.state.products} />} />
             <Route path='/shop/cart' render={() => <ShopCart updateQuantity={this.updateQuantity} cart={this.state.cart} deepCart={this.state.deepCart} />} />
             <Route path="/typerace" render={() => <Race />} />
+            <Route path="/employeemanager" render={() => <EmployeeManager />} />
           </Switch>
 
         </main>

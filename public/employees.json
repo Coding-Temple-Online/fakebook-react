@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "firstName": "Derek",
+        "lastName": "Hawkins",
+        "age": 33,
+        "location": "Dallas, TX"
+    },
+    {
+        "id": 2,
+        "firstName": "Ripal",
+        "lastName": "Patel",
+        "age": 31,
+        "location": "Chicago, IL"
+    },
+    {
+        "id": 3,
+        "firstName": "Joel",
+        "lastName": "Carter",
+        "age": 31,
+        "location": "Chicago, IL"
+    },
+    {
+        "id": 4,
+        "firstName": "Sam",
+        "lastName": "Davitt",
+        "age": 26,
+        "location": "Boston, MA"
+    }
+]
