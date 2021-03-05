@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App'; // don't use {} when using export default
+// import App from './App'; // don't use {} when using export default
 // import { App } from './App'; // most use {} when using export
 import { BrowserRouter as Router } from 'react-router-dom';
+import { App } from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(

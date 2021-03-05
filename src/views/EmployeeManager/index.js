@@ -33,12 +33,12 @@ export const EmployeeManager = () => {
         for (const e of employees) {
             if (e.id !== info.id) {
                 employeeList.push(e)
-                // e.online = true;
             }
             else {
                 let newEmp = { 
                     ...e, 
-                    online: info.online ? false : true };
+                    online: info.online ? false : true 
+                };
                 employeeList.push(newEmp);
                 setEmployeeDisplay({ info: newEmp })
             }

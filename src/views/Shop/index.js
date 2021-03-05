@@ -1,17 +1,16 @@
-import React, { Component } from 'react'
-import Product from '../../components/Product'
+import React from 'react';
+import { Product } from '../../components/Product';
 
-export default class Shop extends Component {
-        render() {
-
-        return (
+export const Shop = (props) => {
+    return (
+        <div>
             <div>
                 <h3>Shop</h3>
                 <hr />
                 <div className="card-deck">
-                    {this.props.products.map((p, idx) => <Product addToCart={this.props.addToCart} info={p} key={idx} />)}
+                    {props.products.map((p, idx) => <Product addToCart={props.addToCart} info={p} key={idx} />)}
                 </div>
             </div>
-        )
-    }
+        </div>
+    )
 }

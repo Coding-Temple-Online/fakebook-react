@@ -1,0 +1,46 @@
+{
+    "products": [
+        {
+            "id": 1,
+            "name": "Orange T-Shirt",
+            "description": "This is a bright shirt!",
+            "price": 5.99,
+            "tax": 0.36
+        },
+        {
+            "id": 2,
+            "name": "Prince Purple T-Shirt",
+            "description": "This is a shirt formerly knowns as Prince!",
+            "price": 15.99,
+            "tax": 0.96
+        },
+        {
+            "id": 3,
+            "name": "Michael Jackson T-Shirt",
+            "description": "This is a diamond shirt!",
+            "price": 115.99,
+            "tax": 6.96
+        },
+        {
+            "id": 4,
+            "name": "Black T-Shirt",
+            "description": "This is a nice shirt!",
+            "price": 9.99,
+            "tax": 0.59
+        },
+        {
+            "id": 5,
+            "name": "Blue T-Shirt",
+            "description": "This is a OK shirt!",
+            "price": 2.99,
+            "tax": 0.17
+        },
+        {
+            "id": 6,
+            "name": "Dingy Brown T-Shirt",
+            "description": "This is a interesting shirt!",
+            "price": 0.99,
+            "tax": 0.06
+        }
+    ]
+}

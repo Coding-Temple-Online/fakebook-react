@@ -1,133 +1,199 @@
-import React, { Component } from 'react'
-import './App.css';
-import { findProduct } from './_helpers';
+import React, { useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
-
-import Navbar from './components/Navbar';
-import Home from './views/Home';
-import Shop from './views/Shop';
-import Contact from './views/Contact';
-import ShopCart from './views/ShopCart';
-import { Race } from './views/Race';
+import { Navbar } from './components/Navbar';
+import { Contact } from './views/Contact';
 import { EmployeeManager } from './views/EmployeeManager';
+import { Home } from './views/Home';
+import { Race } from './views/Race';
+import { Shop } from './views/Shop';
+import { ShopCart } from './views/ShopCart';
+import './App.css';
+import { Test } from './views/Test';
+import firebase from './firebase';
 
-export default class App extends Component {
-  constructor() {
-    super();
+export const App = () => {
+    const [products, setProducts] = useState([]);
+    const [cart, setDisplayCart] = useState({ items: {} });
+    const [numItems, setNumItems] = useState(0);
+    const [subtotal, setSubtotal] = useState(0);
+    const [taxTotal, setTaxTotal] = useState(0);
+    const [grandTotal, setGrandTotal] = useState(0);
+    const db = firebase.database();
+    const auth = new firebase.auth.GoogleAuthProvider();
+    const [user, setUser] = useState({ authUser: {}, token: null, logged_in: false })
+    
+    // Pulls in products from Firebase
+    useEffect(() => {
+        let newProducts = [];
+        db.ref('products').once('value', (snapshot) => {
+            snapshot.forEach(child => {
+                newProducts.push(child.val())
+            })
+            setProducts(newProducts);
+        })
+    }, [db])
 
-    this.state = {
-      products: [],
-      deepCart: [],
-      cart: []
-    }
-  }
+    // Pulls in products from Flask API
+    // useEffect(() => {
+    //     async function getProducts() {
+    //         await fetch('http://localhost:5000/api/shop')
+    //             .then(r=> r.json())
+    //             .then(data => {
+    //                 setProducts(data)
+    //             })
+    //     } 
+    //     getProducts();
+    // }, [])
 
-  componentDidMount() {
-    fetch('http://localhost:5000/api/shop')
-      .then(res => res.json())
-      .then(data => this.setState({
-        products: data
-      }))
+    const addToCart = p => {
+        var newCart = {...cart};
+        let newNumItems = numItems;
+        let st = subtotal;
+        let tt = taxTotal;
+        let gt = grandTotal;
 
-  }
-  
-  updateQuantity = (product, newQuantity) => {
-    // var cart = [...this.state.cart];
-    var originalQuantity = product.quantity;
-    if (newQuantity > originalQuantity) {
-      this.addToCart(product);
-    }
-    else {
-      this.removeFromCart(product);
-    }
-    // this.setState({ cart })
-  }
-  
-  removeFromCart = (product) => {
-    var deepCart = [...this.state.deepCart];
-    var cart = [...this.state.cart];
-
-    for (let i = 0; i < deepCart.length; i++) {
-      const item = deepCart[i];
-      if (product.id === item.id) {
-        let index = deepCart.indexOf(item);
-        deepCart.splice(index, 1);
-        this.setState({ deepCart });
-        break;
-      }
-    }
-
-    if (findProduct(cart, product)) {
-      var newCart = [...cart];
-
-      for (let i = 0; i < cart.length; i++) {
-        const item = cart[i];
-        if (item.id === product.id) {
-          item.quantity--;
-
-          if (item.quantity === 0) {
-            let index = newCart.indexOf(item);
-            newCart.splice(index, 1);
-            break;
-            // console.log(newCart);
-          }
+        if (Object.keys(newCart.items).length === 0) {
+            let newProductObj = {
+                'product': p,
+                quantity: 1
+            }
+            newCart.items[p.id] = newProductObj;
+            newNumItems = 1;
+            setSubtotal(st += newCart.items[p.id].product.price);
+            setTaxTotal(tt += newCart.items[p.id].product.tax);
+            setGrandTotal(gt += (newCart.items[p.id].product.price + newCart.items[p.id].product.tax));
         }
-      }
-      this.setState({ cart: newCart }, () => console.log(this.state.cart));
-      // console.log(this.state.cart)
-    }
-  }
-
-  addToCart = (product) => {
-    this.setState({ deepCart: this.state.deepCart.concat(product) })
-
-    var obj = {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      tax: product.tax,
-      quantity: 1
-    }
-
-    if (findProduct(this.state.cart, obj)) {
-      for (let i = 0; i < this.state.cart.length; i++) {
-        const item = this.state.cart[i];
-        if (item.id === obj.id) {
-          item.quantity++;
-          this.setState({ cart: this.state.cart })
+        else {
+            if (newCart.items.hasOwnProperty(p.id)) {
+                newCart.items[p.id].quantity++;
+                newNumItems++;
+            }
+            else {
+                let newProductObj = {
+                    'product': p,
+                    quantity: 1
+                }
+                newCart.items[p.id] = newProductObj;
+                newNumItems++;
+            }
+            setSubtotal(st += newCart.items[p.id].product.price);
+            setTaxTotal(tt += newCart.items[p.id].product.tax);
+            setGrandTotal(gt += (newCart.items[p.id].product.price + newCart.items[p.id].product.tax));
         }
-      }
+        setDisplayCart(newCart);
+        setNumItems(newNumItems);
     }
-    else {
-      this.setState({ cart: this.state.cart.concat(obj) })
+
+    const handleQuantityChange = (e, p) => {
+        let st = subtotal;
+        let tt = taxTotal;
+        let gt = grandTotal;
+
+        // currently, the data structure coming into handleQuantityChange is the simplified, display version of my cart
+        let itemToChange;
+        // I want to use addToCart IF the input value's quantity is greater than the value 'p' coming into the cart.
+        if (e.target.value > p.quantity) {
+            for (const item of products) {
+                if (p.product.id === item.id) {
+                    itemToChange = item;
+                    break;
+                }
+            }
+            addToCart(itemToChange);
+            setSubtotal(st += p.product.price);
+            setTaxTotal(tt += p.product.tax);
+            setGrandTotal(gt += (p.product.price + p.product.tax));
+        }
+        else {
+            // ELSE use removeFromCart.
+            removeFromCart(p);
+            setSubtotal(st -= p.product.price);
+            setTaxTotal(tt -= p.product.tax);
+            setGrandTotal(gt -= (p.product.price + p.product.tax));
+        }
     }
     
-  };
+    const removeFromCart = p => {
+        let newCart = {...cart};
+        let newNumItems = numItems;
 
-  render() {
+        // console.log(newCart.items[15].quantity)
+        if (newCart.items[p.product.id].quantity > 1) {
+            newCart.items[p.product.id].quantity--;
+            newNumItems --;
+        }
+        else {
+            delete newCart.items[p.product.id];
+            newNumItems --;
+        }
+
+        setDisplayCart(newCart);
+        setNumItems(newNumItems);
+    }
+
+    const signIn = () => {
+        function secureSignIn() {
+            firebase.auth()
+                .signInWithPopup(auth)
+                .then(res => {
+                    var credential = res.credential;
+                    var token = credential.accessToken;
+                    var user = res.user;
+                    let loginInfo = { authUser: user, token, logged_in: true };
+                    setUser(loginInfo);
+                })
+                .catch(err => {
+                    var errCode = err.code;
+                    var errMessage = err.message;
+                    var email = err.email;
+                    var credential = err.credential;
+
+                    console.log({ errCode, errMessage, email, credential })
+                })
+            }
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                return secureSignIn();
+            })
+            .catch(err => {
+                console.error(`${err.code}\n${err.message}`);
+            })
+    }
+
+    const signOut = () => {
+        firebase.auth().signOut().then(() => {
+            let logoutInfo = { authUser: {}, token: null, logged_in: false };
+            setUser(logoutInfo);
+        }).catch(err => console.log(err))
+    }
+
+    useEffect(() => {
+        if (JSON.parse(localStorage.getItem('authUser'))) {
+            setUser(JSON.parse(localStorage.getItem('authUser')));
+        }
+    }, [])
+
     return (
-      <div>
-        <header>
-          <Navbar cart={this.state.cart} deepCart={this.state.deepCart} />
-        </header>
+        <div>
+            <header>
+                <Navbar cart={cart} numItems={numItems} user={user} signIn={signIn} signOut={signOut} />
+            </header>
 
-        <main className="container">
+            <main className="container">
+                <Switch>
+                    <Route exact path='/' render={() => <Home user={user} />} />
+                    <Route path='/contact' render={() => <Contact />} />
+                    <Route exact path='/shop' render={() => <Shop addToCart={addToCart} products={products} />} />
+                    <Route path='/shop/cart' render={() => <ShopCart subtotal={subtotal} taxTotal={taxTotal} grandTotal={grandTotal} handleQuantityChange={handleQuantityChange} cart={cart} />} />
+                    <Route path="/typerace" render={() => <Race />} />
+                    <Route path="/test" render={() => <Test />} />
+                    <Route path="/employeemanager" render={() => <EmployeeManager />} />
+                </Switch>
+            </main>
 
-          <Switch>
-            <Route exact path='/' render={() => <Home />} />
-            <Route path='/contact' render={() => <Contact />} />
-            <Route exact path='/shop' render={() => <Shop addToCart={this.addToCart} products={this.state.products} />} />
-            <Route path='/shop/cart' render={() => <ShopCart updateQuantity={this.updateQuantity} cart={this.state.cart} deepCart={this.state.deepCart} />} />
-            <Route path="/typerace" render={() => <Race />} />
-            <Route path="/employeemanager" render={() => <EmployeeManager />} />
-          </Switch>
+            <footer>
 
-        </main>
-
-        <footer></footer>
-
-      </div>
+            </footer>
+        </div>
     )
-  }
 }

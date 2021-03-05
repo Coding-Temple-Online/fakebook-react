@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
-import CartItem from './CartItem';
+import React from 'react'
+import { CartItem } from './CartItem'
 
-export default class CartList extends Component {
-    render() {
-        return (
-            <React.Fragment>
-                {this.props.cart.map((item, idx) => <CartItem updateQuantity={this.props.updateQuantity} key={idx} item={item} />)}
-            </React.Fragment>
-        )
-    }
+export const CartList = (props) => {
+    return (
+        <React.Fragment>
+            {Object.values(props.cart.items).map((item, idx) => <CartItem handleQuantityChange={props.handleQuantityChange} key={idx} item={item} />)}
+            {/* {props.cart.map((item, idx) => <CartItem updateQuantity={props.updateQuantity} key={idx} item={item} />)} */}
+        </React.Fragment>
+    )
 }

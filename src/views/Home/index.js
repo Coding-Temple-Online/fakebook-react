@@ -1,11 +1,12 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-export default class Shop extends Component {
-    render() {
-        return (
-            <div>
-                This is the Home page
-            </div>
-        )
-    }
+export const Home = (props) => {
+    // console.log(props.user)
+    return (
+        <div>
+            <h3>Home</h3>
+            <hr/>
+            Welcome{props.user.authUser.displayName ? `, ${props.user.authUser.displayName}` : '!' }
+        </div>
+    )
 }
