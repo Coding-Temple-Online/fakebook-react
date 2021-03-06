@@ -10,6 +10,7 @@ import { ShopCart } from './views/ShopCart';
 import './App.css';
 import { Test } from './views/Test';
 import firebase from './firebase';
+import { useAuth } from './contexts/AuthContext';
 
 export const App = () => {
     const [products, setProducts] = useState([]);
@@ -19,8 +20,8 @@ export const App = () => {
     const [taxTotal, setTaxTotal] = useState(0);
     const [grandTotal, setGrandTotal] = useState(0);
     const db = firebase.database();
-    const auth = new firebase.auth.GoogleAuthProvider();
-    const [user, setUser] = useState({ authUser: {}, token: null, logged_in: false })
+    // const [user, setUser] = useState({ authUser: {}, token: null, logged_in: false })
+    const { signIn } = useAuth();
     
     // Pulls in products from Firebase
     useEffect(() => {
@@ -131,57 +132,31 @@ export const App = () => {
         setNumItems(newNumItems);
     }
 
-    const signIn = () => {
-        function secureSignIn() {
-            firebase.auth()
-                .signInWithPopup(auth)
-                .then(res => {
-                    var credential = res.credential;
-                    var token = credential.accessToken;
-                    var user = res.user;
-                    let loginInfo = { authUser: user, token, logged_in: true };
-                    setUser(loginInfo);
-                })
-                .catch(err => {
-                    var errCode = err.code;
-                    var errMessage = err.message;
-                    var email = err.email;
-                    var credential = err.credential;
-
-                    console.log({ errCode, errMessage, email, credential })
-                })
-            }
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-            .then(() => {
-                return secureSignIn();
-            })
-            .catch(err => {
-                console.error(`${err.code}\n${err.message}`);
-            })
-    }
+    
 
     const signOut = () => {
         firebase.auth().signOut().then(() => {
-            let logoutInfo = { authUser: {}, token: null, logged_in: false };
-            setUser(logoutInfo);
+            console.log('User signed out.')
         }).catch(err => console.log(err))
     }
 
-    useEffect(() => {
-        if (JSON.parse(localStorage.getItem('authUser'))) {
-            setUser(JSON.parse(localStorage.getItem('authUser')));
-        }
-    }, [])
+    // useEffect(() => {
+    //     firebase.auth().onAuthStateChanged(u => {
+    //         if (u) {
+    //             console.log(u)
+    //         }
+    //     })
+    // }, [user])
 
     return (
         <div>
             <header>
-                <Navbar cart={cart} numItems={numItems} user={user} signIn={signIn} signOut={signOut} />
+                <Navbar cart={cart} numItems={numItems} signIn={signIn} signOut={signOut} />
             </header>
 
             <main className="container">
                 <Switch>
-                    <Route exact path='/' render={() => <Home user={user} />} />
+                    <Route exact path='/' render={() => <Home />} />
                     <Route path='/contact' render={() => <Contact />} />
                     <Route exact path='/shop' render={() => <Shop addToCart={addToCart} products={products} />} />
                     <Route path='/shop/cart' render={() => <ShopCart subtotal={subtotal} taxTotal={taxTotal} grandTotal={grandTotal} handleQuantityChange={handleQuantityChange} cart={cart} />} />

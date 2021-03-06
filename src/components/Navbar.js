@@ -1,7 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 export const Navbar = (props) => {
+    const { currentUser } = useAuth();
     const handleLogin = () => {
         props.signIn();
     }
@@ -46,10 +48,11 @@ export const Navbar = (props) => {
                             </Link>
                         </div>
                     </li>
+                    {/* { props.user.logged_in ? (<li>Hello</li>) : null} */}
                 </ul>
                 <ul className="navbar-nav m1-auto">
                     {
-                        !props.user.logged_in
+                        !currentUser
                         ?
                         (<Link onClick={() => handleLogin()} to="" className="nav-link">Login</Link>)
                         :

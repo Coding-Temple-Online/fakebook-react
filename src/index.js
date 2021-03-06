@@ -4,12 +4,15 @@ import ReactDOM from 'react-dom';
 // import { App } from './App'; // most use {} when using export
 import { BrowserRouter as Router } from 'react-router-dom';
 import { App } from './App';
+import { AuthProvider } from './contexts/AuthContext';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')
